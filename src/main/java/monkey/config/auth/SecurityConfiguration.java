@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/v1/competition").hasAuthority("admin")
                 .anyRequest().authenticated()
 
                 .and()
