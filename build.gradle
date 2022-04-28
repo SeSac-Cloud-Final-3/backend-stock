@@ -1,0 +1,61 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'com.google.cloud.tools.jib' version '3.2.1'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.awspring.cloud:spring-cloud-aws:2.4.0'
+    implementation 'io.awspring.cloud:spring-cloud-aws-context:2.4.0'
+    implementation 'com.google.cloud.tools:jib-maven-plugin:3.2.1'
+    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2',
+            'io.jsonwebtoken:jjwt-jackson:0.11.2'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'mysql:mysql-connector-java'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+jar {
+    enabled(false)
+}
+
+jib {
+    from {
+        image = "openjdk:11-jdk-slim"
+    }
+    to {
+        image = project.findProperty("docker.image.name")
+        tags = [project.findProperty("docker.image.tag")]
+        auth {
+            username = project.findProperty("docker.repository.username")
+            password = project.findProperty("docker.repository.password")
+        }
+    }
+}
